@@ -61,7 +61,7 @@ async fn tunnel(req: Request, mut cx: RouteContext<Config>) -> Result<Response> 
         
         if proxy_kv_str.len() == 0 {
             console_log!("getting proxy kv from github...");
-            let req = Fetch::Url(Url::parse("https://raw.githubusercontent.com/FoolVPN-ID/Nautica/refs/heads/main/kvProxyList.json")?);
+            let req = Fetch::Url(Url::parse("https://raw.githubusercontent.com/datayumiwandi/shiroko/refs/heads/main/Data/Alive.json")?);
             let mut res = req.send().await?;
             if res.status_code() == 200 {
                 proxy_kv_str = res.text().await?.to_string();
@@ -117,23 +117,23 @@ fn link(_: Request, cx: RouteContext<Config>) -> Result<Response> {
             "ps": "siren vmess",
             "v": "2",
             "add": host,
-            "port": "80",
+            "port": "443",
             "id": uuid,
             "aid": "0",
             "scy": "zero",
             "net": "ws",
             "type": "none",
             "host": host,
-            "path": "/KR",
+            "path": "/SG",
             "tls": "",
             "sni": "",
             "alpn": ""}
         );
         format!("vmess://{}", URL_SAFE.encode(config.to_string()))
     };
-    let vless_link = format!("vless://{uuid}@{host}:443?encryption=none&type=ws&host={host}&path=%2FKR&security=tls&sni={host}#siren vless");
-    let trojan_link = format!("trojan://{uuid}@{host}:443?encryption=none&type=ws&host={host}&path=%2FKR&security=tls&sni={host}#siren trojan");
-    let ss_link = format!("ss://{}@{host}:443?plugin=v2ray-plugin%3Btls%3Bmux%3D0%3Bmode%3Dwebsocket%3Bpath%3D%2FKR%3Bhost%3D{host}#siren ss", URL_SAFE.encode(format!("none:{uuid}")));
+    let vless_link = format!("vless://{uuid}@{host}:443?encryption=none&type=ws&host={host}&path=%2FSG&security=tls&sni={host}#siren vless");
+    let trojan_link = format!("trojan://{uuid}@{host}:443?encryption=none&type=ws&host={host}&path=%2FSG&security=tls&sni={host}#siren trojan");
+    let ss_link = format!("ss://{}@{host}:443?plugin=v2ray-plugin%3Btls%3Bmux%3D0%3Bmode%3Dwebsocket%3Bpath%3D%2FSG%3Bhost%3D{host}#siren ss", URL_SAFE.encode(format!("none:{uuid}")));
     
     Response::from_body(ResponseBody::Body(format!("{vmess_link}\n{vless_link}\n{trojan_link}\n{ss_link}").into()))
 }
