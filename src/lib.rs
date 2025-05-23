@@ -65,7 +65,7 @@ async fn tunnel(req: Request, mut cx: RouteContext<Config>) -> Result<Response> 
             let mut res = req.send().await?;
             if res.status_code() == 200 {
                 proxy_kv_str = res.text().await?.to_string();
-                kv.put("proxy_kv", &proxy_kv_str)?.expiration_ttl(60 * 60 * 24).execute().await?; // 24 hours
+                kv.put("proxy_kv", &proxy_kv_str)?.expiration_ttl(60 * 60 * 6).execute().await?; // 6 hours
             } else {
                 return Err(Error::from(format!("error getting proxy kv: {}", res.status_code())));
             }
@@ -103,7 +103,7 @@ async fn tunnel(req: Request, mut cx: RouteContext<Config>) -> Result<Response> 
     
         Response::from_websocket(client)
     } else {
-        Response::from_html("hi from wasm!")
+        Response::from_html("hi from wasm! yumimayumi")
     }
 
 }
@@ -114,7 +114,7 @@ fn link(_: Request, cx: RouteContext<Config>) -> Result<Response> {
 
     let vmess_link = {
         let config = json!({
-            "ps": "siren vmess",
+            "ps": "siren vmess yumimayumi",
             "v": "2",
             "add": host,
             "port": "443",
@@ -125,14 +125,14 @@ fn link(_: Request, cx: RouteContext<Config>) -> Result<Response> {
             "type": "none",
             "host": host,
             "path": "/SG",
-            "tls": "",
-            "sni": "",
+            "tls": "true",
+            "sni": host,
             "alpn": ""}
         );
         format!("vmess://{}", URL_SAFE.encode(config.to_string()))
     };
-    let vless_link = format!("vless://{uuid}@{host}:443?encryption=none&type=ws&host={host}&path=%2FSG&security=tls&sni={host}#siren vless");
-    let trojan_link = format!("trojan://{uuid}@{host}:443?encryption=none&type=ws&host={host}&path=%2FSG&security=tls&sni={host}#siren trojan");
+    let vless_link = format!("vless://{uuid}@{host}:443?encryption=none&type=ws&host={host}&path=%2FSG&security=tls&sni={host}#siren vless yumimayumi");
+    let trojan_link = format!("trojan://{uuid}@{host}:443?encryption=none&type=ws&host={host}&path=%2FSG&security=tls&sni={host}#siren trojan yumimayumi");
     let ss_link = format!("ss://{}@{host}:443?plugin=v2ray-plugin%3Btls%3Bmux%3D0%3Bmode%3Dwebsocket%3Bpath%3D%2FSG%3Bhost%3D{host}#siren ss", URL_SAFE.encode(format!("none:{uuid}")));
     
     Response::from_body(ResponseBody::Body(format!("{vmess_link}\n{vless_link}\n{trojan_link}\n{ss_link}").into()))
